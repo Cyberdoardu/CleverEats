@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"> 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-    <script src="js/header.js" defer></script>
+    <script src="../js/header.js" defer></script>
 </head>
 <body class="bg-gray-100">
 
@@ -30,7 +30,7 @@
             <div class="text-white bg-black bg-opacity-50 p-6 rounded-lg">
                 <h1 class="text-5xl font-bold mb-4">Alimentação Saudável Simplificada</h1>
                 <p class="text-xl mb-8">Descubra, planeje e acompanhe sua jornada nutricional com facilidade.</p>
-                <a href="paginas/entrar" class="bg-white text-blue-500 py-3 px-6 rounded-lg font-semibold hover:bg-gray-100">Comece Agora</a>
+                <a href="#cadastro" class="bg-white text-blue-500 py-3 px-6 rounded-lg font-semibold hover:bg-gray-100">Comece Agora</a>
             </div>
         </div>
     </section>
@@ -193,7 +193,7 @@
                     <li><a href="#features" class="hover:text-blue-400">Recursos</a></li>
                     <li><a href="#contato" class="hover:text-blue-400">Contato</a></li>
                     <li><a href="#login" class="hover:text-blue-400">Login</a></li>
-                    <li><a href="paginas/entrar" class="hover:text-blue-400">Cadastre-se</a></li>
+                    <li><a href="#cadastro" class="hover:text-blue-400">Cadastre-se</a></li>
                 </ul>
             </div>
 

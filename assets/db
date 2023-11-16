@@ -1,0 +1,98 @@
+-- -----------------------------------------------------
+-- Schema cleverdb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `cleverdb` DEFAULT CHARACTER SET utf8 ;
+USE `cleverdb` ;
+
+-- -----------------------------------------------------
+-- User cleverdb
+-- -----------------------------------------------------
+
+CREATE USER 'clevereats' IDENTIFIED BY 'alf@c3F@zB3m';
+GRANT ALL PRIVILEGES ON cleverdb.* TO 'clevereats'; FLUSH PRIVILEGES;
+
+
+  -- Tabela `users`
+CREATE TABLE IF NOT EXISTS `users` (
+    `user_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL,
+    `sobrenome` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL UNIQUE,
+    `hash` VARCHAR(128) NOT NULL,
+    `role` ENUM('paciente', 'nutricionista') NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabela `food_info`
+CREATE TABLE IF NOT EXISTS `food_info` (
+    `food_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `calories_per_gram` DECIMAL(10, 2),
+    `proteins_percentage` DECIMAL(5, 2),
+    `fat_percentage` DECIMAL(5, 2),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
+-- Tabela `food_log`
+CREATE TABLE IF NOT EXISTS `food_log` (
+    `log_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `date_time` DATETIME NOT NULL,
+    `recipe` TEXT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
+-- Tabela de Associação `food_log_food_info`
+CREATE TABLE IF NOT EXISTS `food_log_food_info` (
+    `log_id` INT NOT NULL,
+    `food_id` INT NOT NULL,
+    `portion_grams` DECIMAL(10, 2),
+    FOREIGN KEY (`log_id`) REFERENCES `food_log`(`log_id`),
+    FOREIGN KEY (`food_id`) REFERENCES `food_info`(`food_id`),
+    PRIMARY KEY (`log_id`, `food_id`)
+);
+
+-- Tabela `nutritionists`
+CREATE TABLE IF NOT EXISTS `nutritionists` (
+    `nutritionist_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL UNIQUE,
+    `credentials` TEXT NULL,
+    `specialties` TEXT NULL,
+    `availability` TEXT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
+-- Tabela `consultations`
+CREATE TABLE IF NOT EXISTS `consultations` (
+    `consultation_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `nutritionist_id` INT NOT NULL,
+    `scheduled_time` DATETIME NOT NULL,
+    `notes` TEXT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`),
+    FOREIGN KEY (`nutritionist_id`) REFERENCES `nutritionists`(`nutritionist_id`)
+);
+
+-- Tabela `chat_sessions`
+CREATE TABLE IF NOT EXISTS `chat_sessions` (
+    `session_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `nutritionist_id` INT NOT NULL,
+    `start_time` DATETIME NOT NULL,
+    `end_time` DATETIME NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`),
+    FOREIGN KEY (`nutritionist_id`) REFERENCES `nutritionists`(`nutritionist_id`)
+);
+
+-- Tabela `chat_messages`
+CREATE TABLE IF NOT EXISTS `chat_messages` (
+    `message_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `session_id` INT NOT NULL,
+    `sender_id` INT NOT NULL,
+    `message` TEXT NOT NULL,
+    `timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`session_id`) REFERENCES `chat_sessions`(`session_id`),
+    FOREIGN KEY (`sender_id`) REFERENCES `users`(`user_id`)
+);
