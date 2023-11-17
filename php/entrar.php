@@ -12,7 +12,7 @@ if (mysqli_connect_errno()) {
 
 // Verifica se os dados foram postados
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $email = strtolower(mysqli_real_escape_string($con, $_POST['email']));
     $password = mysqli_real_escape_string($con, $_POST['senhaHash']); // A senha já está em hash
 
     // Verifica se está realizando login ou cadastro

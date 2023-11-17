@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alimentos - CleverEats</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script> 
+    <script src="../js/alimentos.js" defer></script>
+    <script src="../js/header.js" defer></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Cabeçalho -->
+    <header class="fixed top-0 w-full z-10 bg-white shadow-md p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-blue-600">CleverEats</a>
+            <div id="header-nav">
+                <!-- Links do cabeçalho -->
+            </div>
+        </nav>
+    </header>
+
+    <div class="flex mt-16">
+        <!-- Menu Lateral de Categorias com borda e sombra -->
+        <div class="w-1/6 h-screen fixed bg-white p-4 overflow-y-auto border-r border-gray-200 shadow"> 
+            <div class="mb-4">
+                <input type="text" id="novaCategoria" placeholder="Inserir a categoria" class="w-full px-2 py-1 border border-gray-300 rounded shadow-sm">
+                <button onclick="adicionarCategoria()" class="w-full bg-blue-500 text-white mt-2 py-2 rounded">Adicionar Categoria</button>
+            </div>
+            <ul id="listaCategorias">
+                <li class="text-blue-600 cursor-pointer">Categoria de Exemplo</li>
+            </ul>
+        </div>
+
+        <!-- Área Central com Cards de Alimentos -->
+        <div class="pt-20 pl-4 ml-1/5 lg:ml-1/6 xl:ml-1/8 w-full"> <!-- <div class="ml-1/4 pl-10 pt-10">  Espaçamento significativamente aumentado para a margem esquerda e o preenchimento interno -->
+            <div class="mx-auto w-2/3">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10" id="gridAlimentos"> 
+                <!-- Cards de Alimentos são carregados aqui -->
+                <!-- Card Editável para Novo Alimento -->
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="mb-2 text-lg font-bold text-gray-700">Adicionar Novo Alimento</h3>
+                    <input type="text" id="novoNomeAlimento" placeholder="Nome do Alimento" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+                    <input type="number" id="novaCaloriaAlimento" placeholder="Calorias" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+                    <input type="number" id="novaGorduraAlimento" placeholder="Gordura (%)" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+                    <input type="number" id="novaProteinaAlimento" placeholder="Proteínas (%)" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+                    <button onclick="adicionarAlimento()" class="w-full bg-blue-500 text-white py-2 rounded">Adicionar</button>
+                </div>
+                <!-- Exemplo de Card de Alimento -->
+                <div class="bg-white rounded-lg shadow-lg p-4" id="cardAlimento-1">
+                    <h3 class="nomeAlimento text-lg font-bold text-gray-700">Pão</h3>
+                    <p class="caloriasAlimento">Calorias: 20 cal/g</p>
+                    <p class="proteinasAlimento">Proteínas: 4 %</p>
+                    <p class="gordurasAlimento">Gorduras: 2 %</p>
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="editarCard('cardAlimento-1')" class="bg-blue-500 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
+                        <button onclick="deletarCard('cardAlimento-1')" class="bg-red-500 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-4" id="cardAlimento-2">
+                    <h3 class="nomeAlimento text-lg font-bold text-gray-700">Pudim</h3>
+                    <p class="caloriasAlimento">Calorias: 36 cal/g</p>
+                    <p class="proteinasAlimento">Proteínas: 6 %</p>
+                    <p class="gordurasAlimento">Gorduras: 4 %</p>
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="editarCard('cardAlimento-2')" class="bg-blue-500 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
+                        <button onclick="deletarCard('cardAlimento-2')" class="bg-red-500 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
