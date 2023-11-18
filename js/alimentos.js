@@ -1,4 +1,48 @@
 var cardsInfo = {};
+var currentCategoriaId = 1;
+
+document.addEventListener('DOMContentLoaded', () => {
+    carregarLista(1);
+});
+
+
+function carregarLista(categoriaId) {
+    // Limpa o grid de alimentos antes de carregar novos itens
+    $('#gridAlimentos').empty();
+
+    //Adiciona card para adição de novos cards
+    $('#gridAlimentos').append(`
+
+    <div class="bg-white rounded-lg shadow-lg p-4">
+        <h3 class="mb-2 text-lg font-bold text-gray-700">Adicionar Novo Alimento</h3>
+        <input type="text" id="novoNomeAlimento" placeholder="Nome do Alimento" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+        <input type="number" id="novaCaloriaAlimento" placeholder="Calorias" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+        <input type="number" id="novaGorduraAlimento" placeholder="Gordura (%)" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+        <input type="number" id="novaProteinaAlimento" placeholder="Proteínas (%)" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
+        <button onclick="adicionarAlimento()" class="w-full bg-blue-500 text-white py-2 rounded">Adicionar</button>
+    </div>
+    `);
+
+    // Cria um objeto com os dados a serem enviados
+    var dados = { categoria_id: categoriaId };
+
+    // Realiza a requisição para o servidor utilizando jQuery AJAX
+    $.ajax({
+        url: '../php/carregarAlimentos.php',
+        method: 'POST',
+        data: dados,
+        success: function(response) {
+            var alimentos = JSON.parse(response);
+            alimentos.forEach(function(alimento) {
+                adicionarCardAoGrid(alimento.food_id, alimento.name, alimento.calories_per_gram, alimento.proteins_percentage, alimento.fat_percentage);
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert("Erro ao carregar alimentos: " + textStatus);
+        }
+    });
+}
+
 
 function adicionarAlimento() {
     var nome = $('#novoNomeAlimento').val();
@@ -17,7 +61,8 @@ function adicionarAlimento() {
         nome: nome,
         calorias: calorias,
         proteinas: proteinas,
-        gorduras: gorduras
+        gorduras: gorduras,
+        categoria: currentCategoriaId
     };
 
     // Realiza a requisição para o servidor utilizando jQuery AJAX
@@ -70,7 +115,8 @@ function adicionarCardAoGrid(foodId, nome, calorias, proteinas, gorduras) {
         nome: nome,
         calorias: calorias,
         proteinas: proteinas,
-        gorduras: gorduras
+        gorduras: gorduras,
+        categoria: currentCategoriaId
     };
 }
 
@@ -83,7 +129,8 @@ function atualizarAlimento(foodId) {
         descricao: document.getElementById("descricaoAlimento" + foodId).value,
         calorias: document.getElementById("caloriasAlimento" + foodId).value,
         proteinas: document.getElementById("proteinasAlimento" + foodId).value,
-        gorduras: document.getElementById("gordurasAlimento" + foodId).value
+        gorduras: document.getElementById("gordurasAlimento" + foodId).value,
+        categoria: currentCategoriaId
     });
 
     fetch('../php/atualizarAlimento.php', {
@@ -121,7 +168,6 @@ async function salvarEdicao(cardId) {
 
     // Captura os valores editados
     const nomeAlimento = card.querySelector('.nomeAlimento').value;
-    const descricaoAlimento = card.querySelector('.descricaoAlimento').value;
     const caloriasAlimento = card.querySelector('.caloriasAlimento').value;
     const proteinasAlimento = card.querySelector('.proteinasAlimento').value;
     const gordurasAlimento = card.querySelector('.gordurasAlimento').value;
@@ -133,6 +179,7 @@ async function salvarEdicao(cardId) {
     dados.append('calorias', caloriasAlimento);
     dados.append('proteinas', proteinasAlimento);
     dados.append('gorduras', gordurasAlimento);
+    dados.append('categoria', currentCategoriaId);
 
     // Envia os dados para o servidor via AJAX
     try {
@@ -143,13 +190,17 @@ async function salvarEdicao(cardId) {
 
         const retorno = await resposta.text();
         if (retorno === 'Sucesso') {
-            transformarCardFixo(cardId, nomeAlimento, descricaoAlimento, caloriasAlimento, proteinasAlimento, gordurasAlimento);
+            transformarCardFixo(cardId);
         } else {
             alert('Erro ao salvar: ' + retorno);
         }
     } catch (erro) {
         alert('Erro ao enviar dados: ' + erro);
     }
+
+
+    transformarCardFixo(cardId);
+
 }
 
 
@@ -189,27 +240,33 @@ function editarCard(cardId) {
 }
 
 
-function transformarCardFixo(cardId, nome, calorias, proteinas, gorduras) {
+function transformarCardFixo(cardId) {
     const card = document.getElementById(cardId);
 
-    const cardFixoHTML = `
-    <div class="bg-white rounded-lg shadow-lg p-4" id="${cardId}">
-    <h3 class="nomeAlimento text-lg font-bold text-gray-700">${nome}</h3>
-    <p class="caloriasAlimento">Calorias: ${calorias} cal/g</p>
-    <p class="proteinasAlimento">Proteínas: ${proteinas} %</p>
-    <p class="gordurasAlimento">Gorduras: ${gorduras} %</p>
-    <div class="flex space-x-2 mt-4">
-        <button onclick="editarCard('${cardId}')" class="bg-blue-500 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
-        <button onclick="deletarCard('${cardId}')" class="bg-red-500 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
-    </div>
-    </div>
+    // Verifica se as informações do card estão presentes no objeto cardsInfo
+    if (cardsInfo[cardId]) {
+        const nome = cardsInfo[cardId].nome;
+        const calorias = cardsInfo[cardId].calorias;
+        const proteinas = cardsInfo[cardId].proteinas;
+        const gorduras = cardsInfo[cardId].gorduras;
 
-    `;
+        // Gera o HTML para o modo de visualização
+        const cardFixoHTML = `
+                <h3 class="nomeAlimento text-lg font-bold text-gray-700">${nome}</h3>
+                <p class="caloriasAlimento">Calorias: ${calorias} cal/g</p>
+                <p class="proteinasAlimento">Proteínas: ${proteinas} %</p>
+                <p class="gordurasAlimento">Gorduras: ${gorduras} %</p>
+                <div class="flex space-x-2 mt-4">
+                    <button onclick="editarCard('${cardId}')" class="bg-blue-500 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
+                    <button onclick="deletarCard('${cardId}')" class="bg-red-500 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
+                </div>
+        `;
 
-
-
-
-    card.innerHTML = cardFixoHTML;
+        // Atualiza o HTML do card
+        card.innerHTML = cardFixoHTML;
+    } else {
+        alert('Erro: Informações do card não encontradas.');
+    }
 }
 
 

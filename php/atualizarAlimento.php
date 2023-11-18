@@ -10,7 +10,6 @@ if (isset($_POST['food_id'], $_POST['nome'], $_POST['calorias'], $_POST['protein
     $calorias = mysqli_real_escape_string($con, $_POST['calorias']);
     $proteinas = mysqli_real_escape_string($con, $_POST['proteinas']);
     $gorduras = mysqli_real_escape_string($con, $_POST['gorduras']);
-    $user_id = $_SESSION['user_id']; // Supondo que o user_id está armazenado na sessão
 
     // Prepare a query para evitar SQL injection
     $query = $con->prepare("UPDATE food_info SET name = ?, calories_per_gram = ?, proteins_percentage = ?, fat_percentage = ? WHERE food_id = ? AND user_id = ?");

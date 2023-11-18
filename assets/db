@@ -24,6 +24,15 @@ CREATE TABLE IF NOT EXISTS `users` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+
+-- Tabela `food_categories`
+CREATE TABLE IF NOT EXISTS `food_categories` (
+    `categoria_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `categoria_nome` VARCHAR(255) NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
 -- Tabela `food_info`
 CREATE TABLE IF NOT EXISTS `food_info` (
     `food_id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,8 +41,12 @@ CREATE TABLE IF NOT EXISTS `food_info` (
     `calories_per_gram` DECIMAL(10, 2),
     `proteins_percentage` DECIMAL(5, 2),
     `fat_percentage` DECIMAL(5, 2),
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+    `categoria_id` INT,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`),
+    FOREIGN KEY (`categoria_id`) REFERENCES `food_categories`(`categoria_id`)
 );
+
+
 
 -- Tabela `food_log`
 CREATE TABLE IF NOT EXISTS `food_log` (
