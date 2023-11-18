@@ -23,8 +23,8 @@ $user_id = $row['user_id'];
 
 
 // Exclui informações do usuário das tabelas associadas TIRAR COMENTÁRIOS DEPOIS QUE FICAR PRONTO
-//mysqli_query($con, "DELETE FROM `food_log` WHERE `user_id` = $user_id");
-//mysqli_query($con, "DELETE FROM `food_info` WHERE `user_id` = $user_id");
+mysqli_query($con, "DELETE FROM `food_info` WHERE `user_id` = $user_id");
+mysqli_query($con, "DELETE FROM `food_categories` WHERE `user_id` = $user_id");
 
 // Exclui o usuário
 $query = "DELETE FROM `users` WHERE `user_id` = $user_id";

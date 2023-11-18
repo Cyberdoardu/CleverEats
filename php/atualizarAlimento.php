@@ -16,7 +16,7 @@ if (isset($_POST['food_id'], $_POST['nome'], $_POST['calorias'], $_POST['protein
     $query->bind_param("sddiii", $nome, $calorias, $proteinas, $gorduras, $food_id, $user_id);
 
     if ($query->execute()) {
-        echo "Alimento atualizado com sucesso!";
+        echo "Sucesso";
     } else {
         echo "Erro ao atualizar alimento: " . $con->error;
     }

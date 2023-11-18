@@ -38,9 +38,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $insertQuery = "INSERT INTO `users` (`name`, `sobrenome`, `email`, `hash`, `role`) VALUES ('$name', '$sobrenome', '$email', '$password', '$accountType')";
                 if (mysqli_query($con, $insertQuery)) {
                     // Cria a sessão do usuário
+                                        // Usar cookies seguros
+                    ini_set('session.cookie_httponly', 1);
+                    ini_set('session.cookie_secure', 1);
+                    ini_set('session.use_only_cookies', 1);
+
+                    // Gerar um novo ID de sessão a cada login para evitar roubo de sessão
+                    session_regenerate_id(true);
+
+                    $_SESSION["name"] = $name;
+                    $_SESSION["role"] = $accountType;
+                    $_SESSION['LAST_ACTIVITY'] = time();
                     $_SESSION['email'] = $email;
+                    $_SESSION['hash'] = $password;
                     // Redireciona para a página de início
                     echo ("Aprovado");
+
                     exit();
                 } else {
                     echo "Erro: " . mysqli_error($con);

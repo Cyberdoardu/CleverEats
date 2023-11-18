@@ -9,7 +9,8 @@ $result = mysqli_query($con, $categoriaQuery);
 
 if ($row = mysqli_fetch_assoc($result)) {
     // Categoria "Geral" já existe, usar seu categoria_id
-    $categoria_id = $row['categoria_id'];
+    //$categoria_id = $row['categoria_id'];
+    $categoria_id = $_POST['categoria'];
 } else {
     // Categoria "Geral" não existe, criar uma nova
     $insertCategoriaQuery = "INSERT INTO `food_categories` (user_id, categoria_nome) VALUES ('$user_id', 'Geral')";

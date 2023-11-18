@@ -48,6 +48,20 @@ CREATE TABLE IF NOT EXISTS `food_info` (
 
 
 
+-- Tabela `nutritionists`
+CREATE TABLE IF NOT EXISTS `nutritionists` (
+    `nutritionist_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL UNIQUE,
+    `credentials` TEXT NULL,
+    `specialties` TEXT NULL,
+    `availability` TEXT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+);
+
+--------------------------------------------------------------------
+
+
+
 -- Tabela `food_log`
 CREATE TABLE IF NOT EXISTS `food_log` (
     `log_id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -67,15 +81,6 @@ CREATE TABLE IF NOT EXISTS `food_log_food_info` (
     PRIMARY KEY (`log_id`, `food_id`)
 );
 
--- Tabela `nutritionists`
-CREATE TABLE IF NOT EXISTS `nutritionists` (
-    `nutritionist_id` INT AUTO_INCREMENT PRIMARY KEY,
-    `user_id` INT NOT NULL UNIQUE,
-    `credentials` TEXT NULL,
-    `specialties` TEXT NULL,
-    `availability` TEXT NULL,
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
-);
 
 -- Tabela `consultations`
 CREATE TABLE IF NOT EXISTS `consultations` (

@@ -27,10 +27,10 @@
         <div class="w-1/6 h-screen fixed bg-white p-4 overflow-y-auto border-r border-gray-200 shadow"> 
             <div class="mb-4">
                 <input type="text" id="novaCategoria" placeholder="Inserir a categoria" class="w-full px-2 py-1 border border-gray-300 rounded shadow-sm">
-                <button onclick="adicionarCategoria()" class="w-full bg-blue-500 text-white mt-2 py-2 rounded">Adicionar Categoria</button>
+                <button onclick="adicionarCategoria()" class="w-full bg-blue-500 text-white mt-2 py-2 rounded hover:bg-blue-700">Adicionar Categoria</button>
             </div>
             <ul id="listaCategorias">
-                <li class="text-blue-600 cursor-pointer">Categoria de Exemplo</li>
+                <button onclick="" class="w-full bg-gray-100 text-black mt-2 py-2 rounded hover:bg-blue-100">Geral</button>
             </ul>
         </div>
 

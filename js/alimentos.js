@@ -2,24 +2,134 @@ var cardsInfo = {};
 var currentCategoriaId = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Verifica se o usuario está logado, senão redirect
+    $.ajax({
+        url: '../php/get-user-info.php',
+        method: 'POST',
+        dataType: 'json',
+        success: function(user_info) {
+            if (user_info && user_info.accountType !== "Tipo de conta não disponível") {
+                if (user_info.accountType === 'nutricionista' || user_info.accountType === 'paciente') {
+                    // Não fazer nada
+                }
+            } else {
+                alert("Você não tem permissão para acessar esta página.");
+                window.location.href = "../";
+            }
+        },
+        error: function() {
+            alert("Erro ao obter informações do usuário");
+            window.location.href = "../";
+        }
+    });
+
+
     carregarLista(1);
+    carregarCategorias();
 });
 
 
+
+function carregarCategorias() {
+    $.ajax({
+        url: '../php/carregarCategorias.php',
+        method: 'GET',
+        success: function(response) {
+            var categorias = JSON.parse(response);
+            $('#listaCategorias').empty();
+            categorias.forEach(function(categoria) {
+                $('#listaCategorias').append(`
+                    <div onclick="carregarLista(${categoria.categoria_id})" class="flex justify-between items-center bg-gray-100 mt-2 py-2 px-2 rounded hover:bg-blue-100">
+                        <button class="text-black">${categoria.categoria_nome}</button>
+                        <button onclick="apagarCategoria(${categoria.categoria_id})" class="bg-red-400 text-white px-2 py-1 rounded hover:bg-red-700">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `);
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert("Erro ao carregar categorias: " + textStatus);
+        }
+    });
+}
+
+function apagarCategoria(categoriaId) {
+    if (!confirm("Tem certeza que deseja apagar esta categoria?")) {
+        return;
+    }
+
+    $.ajax({
+        url: '../php/apagarCategoria.php',
+        method: 'POST',
+        data: { categoria_id: categoriaId },
+        success: function(response) {
+            if (response === "Categoria apagada com sucesso!") {
+                alert("Categoria apagada com sucesso!");
+                carregarCategorias(); // Recarregar as categorias
+            } else {
+                alert("Erro ao apagar categoria: " + response);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert("Erro na requisição: " + textStatus);
+        }
+    });
+}
+
+
+
+function adicionarCategoria() {
+    var categoriaNome = $('#novaCategoria').val();
+
+    if (!categoriaNome) {
+        alert("Por favor, insira o nome da categoria.");
+        return;
+    }
+
+    $.ajax({
+        url: '../php/novaCategoria.php',
+        method: 'POST',
+        data: { categoria_nome: categoriaNome },
+        success: function(response) {
+            var data = JSON.parse(response);
+            if (data.success) {
+                $('#listaCategorias').append(`
+                <div onclick="carregarLista(${data.categoria_id})" class="flex justify-between items-center bg-gray-100 mt-2 py-2 px-2 rounded hover:bg-blue-100">
+                <button class="text-black">${data.categoria_nome}</button>
+                <button onclick="apagarCategoria(${data.categoria_id})" class="bg-red-400 text-white px-2 py-1 rounded hover:bg-red-700">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>                `);
+                $('#novaCategoria').val(''); // Limpa o campo de entrada
+            } else {
+                alert("Erro ao adicionar categoria: " + data.error);
+            }
+        },
+        error: function() {
+            alert("Erro ao enviar solicitação.");
+        }
+    });
+}
+
+
 function carregarLista(categoriaId) {
+    currentCategoriaId = categoriaId;
+    console.log("Carregando alimentos da categoria " + categoriaId);
     // Limpa o grid de alimentos antes de carregar novos itens
     $('#gridAlimentos').empty();
 
     //Adiciona card para adição de novos cards
     $('#gridAlimentos').append(`
 
-    <div class="bg-white rounded-lg shadow-lg p-4">
+    <div class="rounded-lg shadow-lg p-4 border-2 border-dashed border-gray-400 bg-white bg-opacity-50">
         <h3 class="mb-2 text-lg font-bold text-gray-700">Adicionar Novo Alimento</h3>
         <input type="text" id="novoNomeAlimento" placeholder="Nome do Alimento" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
         <input type="number" id="novaCaloriaAlimento" placeholder="Calorias" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
         <input type="number" id="novaGorduraAlimento" placeholder="Gordura (%)" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
         <input type="number" id="novaProteinaAlimento" placeholder="Proteínas (%)" class="w-full mb-2 px-2 py-1 border border-gray-300 rounded shadow-sm">
-        <button onclick="adicionarAlimento()" class="w-full bg-blue-500 text-white py-2 rounded">Adicionar</button>
+        <button onclick="adicionarAlimento()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50">Adicionar</button>
     </div>
     `);
 
@@ -56,6 +166,9 @@ function adicionarAlimento() {
         return;
     }
 
+
+    console.log("Adicionando alimento " + nome + " à categoria " + currentCategoriaId);
+
     // Cria um objeto com os dados a serem enviados
     var dados = {
         nome: nome,
@@ -74,7 +187,7 @@ function adicionarAlimento() {
             if (data.includes("Alimento adicionado com sucesso!")) {
                 // Se for bem sucedido, adiciona o card ao grid
                 adicionarCardAoGrid(data.food_id, nome, calorias, proteinas, gorduras);
-                alert("Alimento adicionado com sucesso!");
+                //alert("Alimento adicionado com sucesso!");
                 // Recarregar ou atualizar os elementos da página conforme necessário
             } else {
                 // Se houver um erro, exibe uma mensagem
@@ -101,8 +214,8 @@ function adicionarCardAoGrid(foodId, nome, calorias, proteinas, gorduras) {
             <p class="proteinasAlimento">Proteínas: ${proteinas} %</p>
             <p class="gordurasAlimento">Gorduras: ${gorduras} %</p>
             <div class="flex space-x-2 mt-4">
-                <button onclick="editarCard('${cardId}')" class="bg-blue-500 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
-                <button onclick="deletarCard('${cardId}')" class="bg-red-500 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
+                <button onclick="editarCard('${cardId}')" class="bg-blue-500 rounded hover:bg-blue-700 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
+                <button onclick="deletarCard('${cardId}')" class="bg-red-500 rounded hover:bg-red-700 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
             </div>
         </div>
     `;
@@ -198,6 +311,14 @@ async function salvarEdicao(cardId) {
         alert('Erro ao enviar dados: ' + erro);
     }
 
+    cardsInfo[cardId] = {
+        nome: nomeAlimento,
+        calorias: caloriasAlimento,
+        proteinas: proteinasAlimento,
+        gorduras: gordurasAlimento,
+        categoria: currentCategoriaId
+    };
+
 
     transformarCardFixo(cardId);
 
@@ -257,8 +378,8 @@ function transformarCardFixo(cardId) {
                 <p class="proteinasAlimento">Proteínas: ${proteinas} %</p>
                 <p class="gordurasAlimento">Gorduras: ${gorduras} %</p>
                 <div class="flex space-x-2 mt-4">
-                    <button onclick="editarCard('${cardId}')" class="bg-blue-500 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
-                    <button onclick="deletarCard('${cardId}')" class="bg-red-500 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="editarCard('${cardId}')" class="bg-blue-500 rounded hover:bg-blue-700 text-white px-4 py-2 rounded"><i class="fas fa-edit"></i></button>
+                    <button onclick="deletarCard('${cardId}')" class="bg-red-500 rounded hover:bg-red-700 text-white px-4 py-2 rounded"><i class="fas fa-trash-alt"></i></button>
                 </div>
         `;
 

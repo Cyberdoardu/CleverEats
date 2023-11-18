@@ -13,7 +13,7 @@
 
     $user_info = array();
 
-    if (isset($_SESSION["nome"])) {
+    if (isset($_SESSION["name"])) {
         $user_info["nome"] = $_SESSION["name"];
     } else {
         $user_info["nome"] = "Nome não disponível";
